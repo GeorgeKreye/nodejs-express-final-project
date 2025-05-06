@@ -21,42 +21,69 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
-  res.send(JSON.stringify(books,null,4));
+public_users.get('/', function(req, res) {
+    let b = new Promise((resolve, reject) => {
+        resolve(books);
+    });
+    b.then((response) =>
+        res.send(JSON.stringify(response,null,4))
+    );
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  const isbn = req.params.isbn;
-  res.send(JSON.stringify(books[isbn],null,4));
+    let b = new Promise((resolve,reject) => {
+        const isbn = req.params.isbn;
+        const book = books[isbn];
+        if (book) {
+            resolve(book);
+        } else {
+            reject("Could not find book with ISBN " + isbn);
+        }
+    });
+    b.then((response) =>
+        res.send(JSON.stringify(response,null,4))
+    ).catch((reason) =>
+        res.status(404).json({message:reason})
+    );
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  const author = req.params.author;
-  let authorBooks = {};
-  keys = Object.keys(books);
-  for (key in keys) {
-    const book = books[key];
-    if (book && book['author'] == author) {
-        authorBooks[key] = book;
-    }
-  }
-  res.send(JSON.stringify(authorBooks,null,4));
+    let b = new Promise((resolve, reject) => {
+        const author = req.params.author;
+        let authorBooks = {};
+        keys = Object.keys(books);
+        for (key in keys) {
+            const book = books[key];
+            if (book && book['author'] == author) {
+                authorBooks[key] = book;
+            }
+        }
+        resolve(authorBooks);
+    });
+    b.then((response) =>
+        res.send(JSON.stringify(response,null,4))
+    );
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  const title = req.params.title;
-  let titleBooks = {};
-  keys = Object.keys(books);
-  for (key in keys) {
-    const book = books[key];
-    if (book && book['title'] == title) {
-        titleBooks[key] = book;
-    }
-  }
-  res.send(JSON.stringify(titleBooks,null,4));
+    let b = new Promise((resolve, reject) => {
+        const title = req.params.title;
+        let titleBooks = {};
+        keys = Object.keys(books);
+        for (key in keys) {
+            const book = books[key];
+            if (book && book['title'] == title) {
+                titleBooks[key] = book;
+            }
+        }
+        resolve(titleBooks);
+    });
+    b.then((response) =>
+        res.send(JSON.stringify(response,null,4))
+    );
 });
 
 //  Get book review
